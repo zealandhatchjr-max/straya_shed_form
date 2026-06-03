@@ -1,5 +1,7 @@
 const WALLS = ["L1", "L2", "W1", "W2"];
 const STORAGE_KEY = "shedQuoteRequests";
+const GOOGLE_ADDRESS_MIN_QUERY_LENGTH = 6;
+const GOOGLE_ADDRESS_DEBOUNCE_MS = 600;
 const SAMPLE_QUOTES = [
   {
     id: "sample-001",
@@ -235,6 +237,9 @@ const state = {
   googleSessionToken: null,
   addressSearchTimer: null,
   addressRequestId: 0,
+  lastGooglePredictionQuery: "",
+  googlePredictionRequests: new Map(),
+  googlePlaceDetailRequests: new Map(),
   googlePlacesError: "",
 };
 
@@ -396,6 +401,7 @@ function selectAddress(address) {
   addressInput.value = address.display;
   addressDataInput.value = JSON.stringify(address);
   addressSelectionSummary.textContent = `Selected address: ${address.display}`;
+  resetGoogleAddressSession();
   hideAddressSuggestions();
 }
 
@@ -405,6 +411,7 @@ function selectGooglePlace(place) {
   addressInput.value = address.display;
   addressDataInput.value = JSON.stringify(address);
   addressSelectionSummary.textContent = `Selected Google address: ${address.display}`;
+  resetGoogleAddressSession();
   hideAddressSuggestions();
 }
 
@@ -442,6 +449,13 @@ function clearSelectedAddress() {
 
 function googleApiKey() {
   return (window.SHED_QUOTE_CONFIG || {}).googleMapsApiKey || "";
+}
+
+function resetGoogleAddressSession() {
+  if (state.addressProvider === "google") {
+    state.googleSessionToken = crypto.randomUUID();
+    state.lastGooglePredictionQuery = "";
+  }
 }
 
 function getGoogleComponent(place, componentType) {
@@ -498,27 +512,6 @@ function mapNewGooglePlaceToLegacyPlace(place) {
   };
 }
 
-function loadGoogleMapsScript(apiKey) {
-  return new Promise((resolve, reject) => {
-    if (window.google?.maps?.places) {
-      resolve();
-      return;
-    }
-
-    const callbackName = "initShedQuoteGooglePlaces";
-    window[callbackName] = () => resolve();
-
-    const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
-      apiKey,
-    )}&libraries=places&callback=${callbackName}`;
-    script.async = true;
-    script.defer = true;
-    script.onerror = () => reject(new Error("Google Maps script failed to load."));
-    document.head.append(script);
-  });
-}
-
 async function initGoogleAddressAutocomplete() {
   const apiKey = googleApiKey();
 
@@ -535,47 +528,72 @@ async function initGoogleAddressAutocomplete() {
 
 async function fetchGooglePredictions(value) {
   const config = window.SHED_QUOTE_CONFIG || {};
-  const response = await fetch("https://places.googleapis.com/v1/places:autocomplete", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Goog-Api-Key": googleApiKey(),
-      "X-Goog-FieldMask":
-        "suggestions.placePrediction.placeId,suggestions.placePrediction.text,suggestions.placePrediction.structuredFormat",
-    },
-    body: JSON.stringify({
-      input: value,
-      includedRegionCodes: [config.addressCountry || "au"],
-      sessionToken: state.googleSessionToken,
-    }),
-  });
+  const query = normalizeSearch(value);
+  const cacheKey = `${config.addressCountry || "au"}:${state.googleSessionToken}:${query}`;
 
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data?.error?.message || "Google Places autocomplete failed.");
+  if (state.googlePredictionRequests.has(cacheKey)) {
+    return state.googlePredictionRequests.get(cacheKey);
   }
 
-  return data.suggestions || [];
+  const request = fetch("https://places.googleapis.com/v1/places:autocomplete", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": googleApiKey(),
+        "X-Goog-FieldMask":
+          "suggestions.placePrediction.placeId,suggestions.placePrediction.text,suggestions.placePrediction.structuredFormat",
+      },
+      body: JSON.stringify({
+        input: value,
+        includedRegionCodes: [config.addressCountry || "au"],
+        sessionToken: state.googleSessionToken,
+      }),
+    })
+    .then(async (response) => {
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data?.error?.message || "Google Places autocomplete failed.");
+      }
+
+      return data.suggestions || [];
+    })
+    .finally(() => {
+      state.googlePredictionRequests.delete(cacheKey);
+    });
+
+  state.googlePredictionRequests.set(cacheKey, request);
+  return request;
 }
 
 async function fetchGooglePlaceDetails(placeId) {
-  const response = await fetch(
-    `https://places.googleapis.com/v1/places/${encodeURIComponent(
-      placeId,
-    )}?fields=id,formattedAddress,addressComponents,location`,
-    {
-      headers: {
-        "X-Goog-Api-Key": googleApiKey(),
-      },
-    },
-  );
-
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data?.error?.message || "Google place details failed.");
+  if (state.googlePlaceDetailRequests.has(placeId)) {
+    return state.googlePlaceDetailRequests.get(placeId);
   }
 
-  return data;
+  const request = fetch(
+      `https://places.googleapis.com/v1/places/${encodeURIComponent(
+        placeId,
+      )}?fields=id,formattedAddress,addressComponents,location`,
+      {
+        headers: {
+          "X-Goog-Api-Key": googleApiKey(),
+        },
+      },
+    )
+    .then(async (response) => {
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data?.error?.message || "Google place details failed.");
+      }
+
+      return data;
+    })
+    .finally(() => {
+      state.googlePlaceDetailRequests.delete(placeId);
+    });
+
+  state.googlePlaceDetailRequests.set(placeId, request);
+  return request;
 }
 
 function searchGoogleAddresses(value) {
@@ -590,13 +608,17 @@ function searchGoogleAddresses(value) {
 
   renderAddressSuggestions(localMatches);
 
-  if (query.length < 3 || !googleApiKey()) return;
+  if (query.length < GOOGLE_ADDRESS_MIN_QUERY_LENGTH || !googleApiKey()) return;
+  if (query === state.lastGooglePredictionQuery && state.currentAddressMatches.some((match) => match.provider === "google-prediction")) {
+    return;
+  }
 
   const requestId = state.addressRequestId + 1;
   state.addressRequestId = requestId;
 
   state.addressSearchTimer = window.setTimeout(async () => {
     try {
+      state.lastGooglePredictionQuery = query;
       const suggestions = await fetchGooglePredictions(value);
       if (requestId !== state.addressRequestId) return;
 
@@ -620,7 +642,7 @@ function searchGoogleAddresses(value) {
       addressSelectionSummary.textContent = `Google address lookup is not available yet: ${error.message}`;
       renderAddressSuggestions(localMatches);
     }
-  }, 250);
+  }, GOOGLE_ADDRESS_DEBOUNCE_MS);
 }
 
 function buildQuote(formData) {

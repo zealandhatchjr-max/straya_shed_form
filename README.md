@@ -16,7 +16,7 @@ Then open:
 http://localhost:4173
 ```
 
-For a fresh checkout, copy `config.example.js` to `config.js` and add the Google Maps browser key locally.
+For a fresh checkout, copy `.env.example` to `.env` and add the Google Maps browser key locally.
 
 ## Development Notes
 
@@ -26,7 +26,7 @@ For a fresh checkout, copy `config.example.js` to `config.js` and add the Google
 - Empty `selectedWalls` means roof only.
 - Notes are optional and limited to 2000 characters.
 - Submitted requests are stored in browser `localStorage` for local development only.
-- Address autocomplete uses Google Places when `config.js` has a `googleMapsApiKey`. Without a key, it falls back to local sample addresses.
+- Address autocomplete uses Google Places when `.env` has `STRAYA_SHEDS_GOOGLE_MAPS_API_KEY`. Without a key, it falls back to local sample addresses.
 - The admin dashboard includes quote list, quote detail, notes, selected wall count, and an email notification preview.
 - No automatic pricing is calculated or displayed.
 
@@ -40,13 +40,10 @@ For a fresh checkout, copy `config.example.js` to `config.js` and add the Google
 http://localhost:4173/*
 ```
 
-4. Add the key in `config.js`:
+4. Add the key in `.env`:
 
-```js
-window.SHED_QUOTE_CONFIG = {
-  googleMapsApiKey: "YOUR_BROWSER_KEY",
-  addressCountry: "au",
-};
+```text
+STRAYA_SHEDS_GOOGLE_MAPS_API_KEY=YOUR_BROWSER_KEY
 ```
 
 For production, add your real website domain to the key restrictions before deploying.
