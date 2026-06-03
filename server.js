@@ -30,7 +30,17 @@ const mimeTypes = {
   ".js": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".webp": "image/webp",
 };
+
+function isAllowedStaticPath(normalizedPath) {
+  if (["/index.html", "/app.js", "/styles.css"].includes(normalizedPath)) {
+    return true;
+  }
+
+  return normalizedPath.startsWith("/assets/") && !normalizedPath.includes("/.");
+}
 
 const server = http.createServer((request, response) => {
   const requestPath = new URL(request.url, `http://${host}:${port}`).pathname;
@@ -47,6 +57,12 @@ const server = http.createServer((request, response) => {
   }
 
   const normalizedPath = requestPath === "/" ? "/index.html" : requestPath;
+  if (!isAllowedStaticPath(normalizedPath)) {
+    response.writeHead(404);
+    response.end("Not found");
+    return;
+  }
+
   const filePath = path.join(root, normalizedPath);
   const resolvedPath = path.resolve(filePath);
 

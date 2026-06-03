@@ -27,6 +27,7 @@ const SAMPLE_QUOTES = [
       width: "9m",
       height: "4.2m",
     },
+    sheetColor: "Dark grey",
     roofType: "Gable",
     roofPitch: "10 degrees",
     roofIncluded: true,
@@ -67,6 +68,7 @@ const SAMPLE_QUOTES = [
       width: "7.5m",
       height: "3.6m",
     },
+    sheetColor: "Light grey",
     roofType: "Skillion",
     roofPitch: "5 degrees",
     roofIncluded: true,
@@ -107,6 +109,7 @@ const SAMPLE_QUOTES = [
       width: "10m",
       height: "5m",
     },
+    sheetColor: "Dark grey",
     roofType: "Gable",
     roofPitch: "10 degrees",
     roofIncluded: true,
@@ -124,116 +127,13 @@ const SAMPLE_QUOTES = [
     submittedAt: "2026-06-01T05:22:00.000Z",
   },
 ];
-const ADDRESS_OPTIONS = [
-  {
-    display: "12 Smith Street, Newcastle NSW 2300",
-    street: "12 Smith Street",
-    suburb: "Newcastle",
-    state: "NSW",
-    postcode: "2300",
-    country: "Australia",
-    lat: -32.9283,
-    lng: 151.7817,
-  },
-  {
-    display: "12 Smith Road, Maitland NSW 2320",
-    street: "12 Smith Road",
-    suburb: "Maitland",
-    state: "NSW",
-    postcode: "2320",
-    country: "Australia",
-    lat: -32.7331,
-    lng: 151.5574,
-  },
-  {
-    display: "84 Industrial Drive, Mayfield NSW 2304",
-    street: "84 Industrial Drive",
-    suburb: "Mayfield",
-    state: "NSW",
-    postcode: "2304",
-    country: "Australia",
-    lat: -32.892,
-    lng: 151.7365,
-  },
-  {
-    display: "27 Boundary Road, Rutherford NSW 2320",
-    street: "27 Boundary Road",
-    suburb: "Rutherford",
-    state: "NSW",
-    postcode: "2320",
-    country: "Australia",
-    lat: -32.7163,
-    lng: 151.5262,
-  },
-  {
-    display: "5 Shed Lane, Thornton NSW 2322",
-    street: "5 Shed Lane",
-    suburb: "Thornton",
-    state: "NSW",
-    postcode: "2322",
-    country: "Australia",
-    lat: -32.7836,
-    lng: 151.635,
-  },
-  {
-    display: "41 Rural Way, Cessnock NSW 2325",
-    street: "41 Rural Way",
-    suburb: "Cessnock",
-    state: "NSW",
-    postcode: "2325",
-    country: "Australia",
-    lat: -32.8347,
-    lng: 151.3555,
-  },
-  {
-    display: "19 Workshop Circuit, Cardiff NSW 2285",
-    street: "19 Workshop Circuit",
-    suburb: "Cardiff",
-    state: "NSW",
-    postcode: "2285",
-    country: "Australia",
-    lat: -32.9412,
-    lng: 151.6568,
-  },
-  {
-    display: "73 Farm Road, Tamworth NSW 2340",
-    street: "73 Farm Road",
-    suburb: "Tamworth",
-    state: "NSW",
-    postcode: "2340",
-    country: "Australia",
-    lat: -31.0833,
-    lng: 150.9167,
-  },
-  {
-    display: "72 Wilson Street, Newtown NSW 2042",
-    street: "72 Wilson Street",
-    suburb: "Newtown",
-    state: "NSW",
-    postcode: "2042",
-    country: "Australia",
-    lat: -33.8951,
-    lng: 151.181,
-  },
-  {
-    display: "72 Wilson Road, Acacia Gardens NSW 2763",
-    street: "72 Wilson Road",
-    suburb: "Acacia Gardens",
-    state: "NSW",
-    postcode: "2763",
-    country: "Australia",
-    lat: -33.7317,
-    lng: 150.9126,
-  },
-];
-
 const state = {
   selectedWalls: [],
   activeQuoteId: null,
   selectedAddress: null,
   activeAddressIndex: -1,
   currentAddressMatches: [],
-  addressProvider: "local",
+  addressProvider: "google",
   googleSessionToken: null,
   addressSearchTimer: null,
   addressRequestId: 0,
@@ -251,6 +151,7 @@ const addressInput = document.querySelector("#delivery-address");
 const addressDataInput = document.querySelector("#delivery-address-data");
 const addressSuggestions = document.querySelector("#address-suggestions");
 const addressSelectionSummary = document.querySelector("#address-selection-summary");
+const phoneInput = form.elements.phone;
 const notesInput = form.elements.notes;
 const notesCount = document.querySelector("#notes-count");
 const quoteList = document.querySelector("#quote-list");
@@ -309,6 +210,35 @@ function validateSelectedWalls(selectedWalls) {
   return selectedWalls.every((wall) => WALLS.includes(wall));
 }
 
+function normalizeAustralianPhone(value) {
+  let phone = String(value || "").trim().replace(/[\s().-]/g, "");
+  if (phone.startsWith("+61")) {
+    phone = `0${phone.slice(3)}`;
+  }
+  return phone;
+}
+
+function isCompleteAustralianPhone(value) {
+  const phone = normalizeAustralianPhone(value);
+  return /^04\d{8}$/.test(phone) || /^0[2378]\d{8}$/.test(phone) || /^1[38]00\d{6}$/.test(phone);
+}
+
+function formatAustralianPhone(value) {
+  const phone = normalizeAustralianPhone(value);
+  if (/^04\d{8}$/.test(phone)) return `${phone.slice(0, 4)} ${phone.slice(4, 7)} ${phone.slice(7)}`;
+  if (/^0[2378]\d{8}$/.test(phone)) return `${phone.slice(0, 2)} ${phone.slice(2, 6)} ${phone.slice(6)}`;
+  if (/^1[38]00\d{6}$/.test(phone)) return `${phone.slice(0, 4)} ${phone.slice(4, 7)} ${phone.slice(7)}`;
+  return "";
+}
+
+function validatePhoneField() {
+  const isValid = isCompleteAustralianPhone(phoneInput.value);
+  phoneInput.setCustomValidity(
+    isValid ? "" : "Enter a complete Australian phone number, for example 0412 345 678 or 02 1234 5678.",
+  );
+  return isValid;
+}
+
 function fileNames(fileList) {
   return Array.from(fileList || []).map((file) => file.name);
 }
@@ -318,15 +248,7 @@ function normalizeSearch(value) {
 }
 
 function findAddressMatches(value) {
-  const query = normalizeSearch(value);
-  if (query.length < 1) return [];
-
-  return ADDRESS_OPTIONS.filter((address) => {
-    const searchable = normalizeSearch(
-      `${address.display} ${address.street} ${address.suburb} ${address.state} ${address.postcode}`,
-    );
-    return query.split(" ").every((part) => searchable.includes(part));
-  }).slice(0, 6);
+  return [];
 }
 
 function renderAddressSuggestions(matches) {
@@ -441,10 +363,7 @@ function selectGooglePrediction(prediction) {
 function clearSelectedAddress() {
   state.selectedAddress = null;
   addressDataInput.value = "";
-  addressSelectionSummary.textContent =
-    state.addressProvider === "google"
-      ? "Start typing and choose a Google address match, or keep typing a custom address."
-      : "Choose a matching address, or keep typing a custom address.";
+  addressSelectionSummary.textContent = "";
 }
 
 function googleApiKey() {
@@ -599,14 +518,13 @@ async function fetchGooglePlaceDetails(placeId) {
 function searchGoogleAddresses(value) {
   const query = normalizeSearch(value);
   window.clearTimeout(state.addressSearchTimer);
-  const localMatches = findAddressMatches(value);
 
   if (query.length < 1) {
     renderAddressSuggestions([]);
     return;
   }
 
-  renderAddressSuggestions(localMatches);
+  renderAddressSuggestions([]);
 
   if (query.length < GOOGLE_ADDRESS_MIN_QUERY_LENGTH || !googleApiKey()) return;
   if (query === state.lastGooglePredictionQuery && state.currentAddressMatches.some((match) => match.provider === "google-prediction")) {
@@ -635,12 +553,12 @@ function searchGoogleAddresses(value) {
           }));
 
       state.googlePlacesError = "";
-      renderAddressSuggestions(googleMatches.length ? googleMatches : localMatches);
+      renderAddressSuggestions(googleMatches);
     } catch (error) {
       if (requestId !== state.addressRequestId) return;
       state.googlePlacesError = error.message;
       addressSelectionSummary.textContent = `Google address lookup is not available yet: ${error.message}`;
-      renderAddressSuggestions(localMatches);
+      renderAddressSuggestions([]);
     }
   }, GOOGLE_ADDRESS_DEBOUNCE_MS);
 }
@@ -649,6 +567,11 @@ function buildQuote(formData) {
   const selectedWalls = [...state.selectedWalls];
   if (!validateSelectedWalls(selectedWalls)) {
     throw new Error("Selected walls must only include L1, L2, W1, and W2 without duplicates.");
+  }
+
+  const phone = formatAustralianPhone(formData.get("phone"));
+  if (!phone) {
+    throw new Error("Enter a complete Australian phone number, for example 0412 345 678 or 02 1234 5678.");
   }
 
   const notes = String(formData.get("notes") || "").trim();
@@ -671,7 +594,7 @@ function buildQuote(formData) {
     id: crypto.randomUUID(),
     customerName: String(formData.get("customerName") || "").trim(),
     email: String(formData.get("email") || "").trim(),
-    phone: String(formData.get("phone") || "").trim(),
+    phone,
     deliveryAddress: String(formData.get("deliveryAddress") || "").trim(),
     deliveryAddressData: state.selectedAddress,
     dimensions: {
@@ -679,6 +602,7 @@ function buildQuote(formData) {
       width: String(formData.get("width") || "").trim(),
       height: String(formData.get("height") || "").trim(),
     },
+    sheetColor: String(formData.get("sheetColor") || "").trim(),
     roofType: String(formData.get("roofType") || "").trim(),
     roofPitch: String(formData.get("roofPitch") || "").trim(),
     roofIncluded: true,
@@ -726,6 +650,7 @@ function renderQuoteList() {
         <em>${escapeHtml(quote.status || "New")}</em>
       </span>
       <span>${escapeHtml(quote.deliveryAddress || "No delivery address")}</span>
+      <span>Sheet colour: ${escapeHtml(quote.sheetColor || "Not provided")}</span>
       <span>Walls: ${escapeHtml(quote.selectedWalls.length ? quote.selectedWalls.join(", ") : "Roof only")}</span>
       <span>${escapeHtml(formatDate(quote.submittedAt))}</span>
     `;
@@ -775,6 +700,7 @@ function renderQuoteDetail(quote) {
     `Delivery address: ${quote.deliveryAddress}`,
     `Structured address: ${structuredAddressLine(quote.deliveryAddressData)}`,
     `Shed dimensions: ${dimensionsLine(quote.dimensions)}`,
+    `Sheet colour: ${quote.sheetColor || "Not provided"}`,
     `Shed type: ${quote.roofType}`,
     `Roof pitch: ${quote.roofPitch}`,
     "Roof included: Yes",
@@ -821,6 +747,7 @@ function renderQuoteDetail(quote) {
     <div class="detail-grid">
       <div class="detail-card"><strong>Roof</strong><span>Included</span></div>
       <div class="detail-card"><strong>Roof type</strong><span>${escapeHtml(quote.roofType)}</span></div>
+      <div class="detail-card"><strong>Sheet colour</strong><span>${escapeHtml(quote.sheetColor || "Not provided")}</span></div>
       <div class="detail-card"><strong>Dimensions</strong><span>${escapeHtml(dimensionsLine(quote.dimensions))}</span></div>
       <div class="detail-card"><strong>Selected walls</strong><span>${escapeHtml(wallLabel(quote.selectedWalls))}</span></div>
       <div class="detail-card"><strong>Wall count</strong><span>${quote.wallCount}</span></div>
@@ -909,11 +836,7 @@ addressInput.addEventListener("input", () => {
   if (state.selectedAddress && addressInput.value !== state.selectedAddress.display) {
     clearSelectedAddress();
   }
-  if (state.addressProvider === "google") {
-    searchGoogleAddresses(addressInput.value);
-    return;
-  }
-  renderAddressSuggestions(findAddressMatches(addressInput.value));
+  searchGoogleAddresses(addressInput.value);
 });
 
 addressInput.addEventListener("keydown", (event) => {
@@ -970,8 +893,19 @@ notesInput.addEventListener("input", () => {
   notesCount.textContent = `${notesInput.value.length} / 2000 characters`;
 });
 
+phoneInput.addEventListener("input", () => {
+  phoneInput.setCustomValidity("");
+});
+
+phoneInput.addEventListener("blur", validatePhoneField);
+
 form.addEventListener("submit", (event) => {
   event.preventDefault();
+
+  if (!validatePhoneField()) {
+    phoneInput.reportValidity();
+    return;
+  }
 
   try {
     const quote = buildQuote(new FormData(form));

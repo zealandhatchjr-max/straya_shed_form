@@ -44,7 +44,7 @@
               </label>
               <label>
                 Phone
-                <input name="phone" autocomplete="tel" required />
+                <input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="e.g. 0412 345 678" required />
               </label>
             </div>
           </fieldset>
@@ -52,11 +52,13 @@
           <fieldset>
             <legend>Delivery address <span class="required-tag">Required</span></legend>
             <div class="address-field">
-              <label for="delivery-address">Address</label>
+              <label class="visually-hidden" for="delivery-address">Delivery address</label>
               <input
                 id="delivery-address"
                 name="deliveryAddress"
-                autocomplete="off"
+                autocomplete="new-password"
+                autocapitalize="words"
+                spellcheck="false"
                 aria-autocomplete="list"
                 aria-controls="address-suggestions"
                 aria-expanded="false"
@@ -65,13 +67,12 @@
               />
               <input id="delivery-address-data" name="deliveryAddressData" type="hidden" />
               <div id="address-suggestions" class="address-suggestions" role="listbox" hidden></div>
-              <p id="address-selection-summary" class="helper-text">Choose a matching address, or keep typing a custom address.</p>
+              <p id="address-selection-summary" class="helper-text address-status" aria-live="polite"></p>
             </div>
           </fieldset>
 
           <fieldset>
             <legend>Shed dimensions <span class="required-tag">Required</span></legend>
-            <p class="helper-text">Enter all shed dimensions in metres.</p>
             <div class="dimensions-layout">
               <figure class="dimension-guide">
                 <img
@@ -83,19 +84,34 @@
                 <div class="dimensions-grid">
                   <label>
                     Length (metres)
-                    <input name="length" inputmode="decimal" placeholder="e.g. 12" aria-describedby="dimensions-help" required />
+                    <input name="length" inputmode="decimal" placeholder="e.g. 12" required />
                   </label>
                   <label>
                     Width (metres)
-                    <input name="width" inputmode="decimal" placeholder="e.g. 7.5" aria-describedby="dimensions-help" required />
+                    <input name="width" inputmode="decimal" placeholder="e.g. 7.5" required />
                   </label>
                   <label>
                     Height (metres)
-                    <input name="height" inputmode="decimal" placeholder="e.g. 3.2" aria-describedby="dimensions-help" required />
+                    <input name="height" inputmode="decimal" placeholder="e.g. 3.2" required />
                   </label>
                 </div>
-                <p id="dimensions-help" class="helper-text">Use metre values only, for example 12, 7.5, and 3.2.</p>
               </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Sheet colour <span class="required-tag">Required</span></legend>
+            <div class="color-options" role="radiogroup" aria-label="Sheet colour">
+              <label class="image-radio-card">
+                <input type="radio" name="sheetColor" value="Dark grey" required />
+                <img src="./assets/dark_grey.webp" alt="Dark grey corrugated sheet" />
+                <span>Dark grey</span>
+              </label>
+              <label class="image-radio-card">
+                <input type="radio" name="sheetColor" value="Light grey" />
+                <img src="./assets/light_grey.webp" alt="Light grey corrugated sheet" />
+                <span>Light grey</span>
+              </label>
             </div>
           </fieldset>
 
@@ -141,13 +157,6 @@
 
           <fieldset class="wall-section">
             <legend>Wall selection diagram <span class="required-tag">Required</span></legend>
-            <p class="helper-text">
-              Select which walls you want quoted, then choose the wall material. Roof sheets are always included.
-            </p>
-            <p class="naming-note">
-              L1 and L2 are the two long side walls. W1 and W2 are the two width/end walls.
-            </p>
-
             <label class="no-walls">
               <input id="no-walls" type="checkbox" checked />
               <span>No walls required</span>
@@ -240,17 +249,14 @@
             <p id="notes-count" class="helper-text">0 / 2000 characters</p>
           </fieldset>
 
-          <button class="submit-button" type="submit">Submit quote request</button>
+          <button class="submit-button" type="submit">Get Quote</button>
         </form>
       </section>
 
       <section id="thank-you-view" class="view" aria-labelledby="thank-you-title">
         <div class="thank-you-panel">
-          <p class="eyebrow">Quote request received</p>
-          <h2 id="thank-you-title">Thanks. Your shed details have been received.</h2>
-          <p>
-            We'll review your dimensions, selected walls, drawings, and notes, then prepare your quote soon.
-          </p>
+          <p class="eyebrow">Request received</p>
+          <h2 id="thank-you-title">Thanks. We'll be in touch soon.</h2>
           <button id="quote-another-shed" class="submit-button" type="button">Get a quote for another shed</button>
         </div>
       </section>

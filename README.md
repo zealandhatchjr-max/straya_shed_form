@@ -49,6 +49,15 @@ The form page should contain:
 [straya_sheds_quote_form]
 ```
 
+## Current Features
+
+- Customer details, Australian phone validation, and Google Places delivery address autocomplete.
+- Shed dimensions, sheet colour selection, roof type, roof pitch, wall selector, optional extras, file-name capture, and notes.
+- Wall selector states: red border when excluded, green hover preview, solid green when selected, and red removal preview when hovering a selected wall.
+- WordPress enquiry storage under **Shed enquiries**, including sync status and retry controls.
+- Email notification to the WordPress admin email.
+- Server-side monday.com sync with hidden API token, generated column mapping support, error recording, manual retry, and delayed retry for failed syncs.
+
 ## Google Places Key
 
 The Google API key is intentionally not hard-coded.

@@ -5,9 +5,12 @@
   --line: #cbd7cf;
   --panel: #ffffff;
   --surface: #f5f7f2;
+  --section: #f8f9f7;
   --accent: #2f6d4d;
   --accent-strong: #174c36;
   --accent-soft: #e0f0e7;
+  --danger: #b42318;
+  --danger-soft: #fee4e2;
   --warning: #a85512;
   --shadow: 0 18px 45px rgba(30, 45, 36, 0.12);
 }
@@ -19,10 +22,21 @@
 .straya-sheds-quote-form-embed {
   margin: 0;
   min-height: 100vh;
+  overflow-x: hidden;
+  width: 100%;
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--ink);
   background: var(--surface);
+}
+
+.entry-content:has(.straya-sheds-quote-form-embed),
+.site-main:has(.straya-sheds-quote-form-embed),
+.page-content:has(.straya-sheds-quote-form-embed),
+.elementor-widget-shortcode:has(.straya-sheds-quote-form-embed),
+.elementor-shortcode:has(.straya-sheds-quote-form-embed) {
+  width: 100% !important;
+  max-width: none !important;
 }
 
 body.page-id-355 .entry-title {
@@ -43,6 +57,7 @@ body.page-id-355 .elementor-location-header {
   position: relative;
   z-index: 10;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
@@ -57,6 +72,7 @@ body.page-id-355 .elementor-location-header {
   align-items: center;
   gap: 14px;
   min-width: 0;
+  flex: 1 1 320px;
 }
 
 .straya-sheds-quote-form-embed .brand-logo-frame {
@@ -84,6 +100,19 @@ body.page-id-355 .elementor-location-header {
   margin: 0;
 }
 
+.straya-sheds-quote-form-embed .visually-hidden,
+.straya-sheds-quote-form-embed .address-field > label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .straya-sheds-quote-form-embed h1 {
   font-size: clamp(1.5rem, 2.4vw, 2.4rem);
   line-height: 1.05;
@@ -109,7 +138,9 @@ body.page-id-355 .elementor-location-header {
 .straya-sheds-quote-form-embed nav {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 8px;
+  flex: 1 1 260px;
 }
 
 .straya-sheds-quote-form-embed .app-header nav,
@@ -120,16 +151,19 @@ body.page-id-355 .elementor-location-header {
 .nav-button,
 .secondary-button,
 .submit-button {
-  min-height: 42px;
+  min-height: 48px;
   border: 1px solid var(--line);
   border-radius: 8px;
   cursor: pointer;
   font-weight: 750;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease;
 }
 
 .nav-button,
 .secondary-button {
-  padding: 0 14px;
+  padding: 0 16px;
   color: var(--ink);
   background: var(--panel);
 }
@@ -141,9 +175,16 @@ body.page-id-355 .elementor-location-header {
   background: var(--accent);
 }
 
+.nav-button:hover,
+.secondary-button:hover,
+.submit-button:hover {
+  border-color: var(--accent);
+  box-shadow: 0 10px 22px rgba(30, 45, 36, 0.1);
+}
+
 .straya-sheds-quote-form-embed main {
-  width: min(1160px, calc(100% - 32px));
-  margin: 28px auto 56px;
+  width: calc(100% - clamp(20px, 5vw, 48px));
+  margin: clamp(16px, 3vw, 28px) auto 56px;
 }
 
 .view {
@@ -165,8 +206,8 @@ body.page-id-355 .elementor-location-header {
 
 .quote-form {
   display: grid;
-  gap: 18px;
-  padding: clamp(18px, 3vw, 32px);
+  gap: clamp(24px, 3vw, 34px);
+  padding: clamp(20px, 3vw, 34px);
 }
 
 .section-heading {
@@ -177,14 +218,17 @@ body.page-id-355 .elementor-location-header {
 .straya-sheds-quote-form-embed fieldset {
   min-width: 0;
   margin: 0;
-  padding: 18px;
+  padding: clamp(28px, 3.4vw, 40px);
   border: 1px solid var(--line);
   border-radius: 8px;
+  background: var(--section);
 }
 
 .straya-sheds-quote-form-embed legend {
   padding: 0 8px;
+  font-size: clamp(1.15rem, 1.5vw, 1.35rem);
   font-weight: 850;
+  line-height: 1.2;
 }
 
 .required-tag,
@@ -197,6 +241,7 @@ body.page-id-355 .elementor-location-header {
   border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 850;
+  line-height: 1;
   vertical-align: middle;
 }
 
@@ -212,7 +257,7 @@ body.page-id-355 .elementor-location-header {
 
 .straya-sheds-quote-form-embed label {
   display: grid;
-  gap: 8px;
+  gap: 10px;
   color: var(--ink);
   font-weight: 740;
 }
@@ -225,12 +270,16 @@ body.page-id-355 .elementor-location-header {
 .straya-sheds-quote-form-embed input,
 .straya-sheds-quote-form-embed textarea {
   width: 100%;
-  min-height: 42px;
+  min-height: 48px;
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 10px 12px;
+  font-size: 1rem;
   color: var(--ink);
   background: #fff;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease;
 }
 
 .straya-sheds-quote-form-embed textarea {
@@ -240,7 +289,15 @@ body.page-id-355 .elementor-location-header {
 .address-field {
   position: relative;
   display: grid;
-  gap: 8px;
+  gap: 12px;
+}
+
+.address-status:empty {
+  display: none;
+}
+
+.straya-sheds-quote-form-embed #address-selection-summary {
+  display: none;
 }
 
 .address-suggestions {
@@ -292,21 +349,21 @@ body.page-id-355 .elementor-location-header {
 
 .field-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 18px;
 }
 
 .dimensions-layout {
   display: grid;
-  grid-template-columns: minmax(260px, 1.1fr) minmax(220px, 0.9fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   align-items: center;
-  gap: 18px;
-  margin-top: 12px;
+  gap: 24px;
+  margin-top: 16px;
 }
 
 .dimensions-grid {
   display: grid;
-  gap: 12px;
+  gap: 18px;
 }
 
 .dimension-guide {
@@ -316,7 +373,7 @@ body.page-id-355 .elementor-location-header {
 .dimension-guide img {
   display: block;
   width: min(100%, 560px);
-  max-height: 300px;
+  max-height: clamp(220px, 32vw, 300px);
   margin: 0 auto;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -331,7 +388,7 @@ body.page-id-355 .elementor-location-header {
 .roof-type-guide img {
   display: block;
   width: min(100%, 620px);
-  max-height: 330px;
+  max-height: clamp(220px, 34vw, 330px);
   margin: 0 auto;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -341,24 +398,30 @@ body.page-id-355 .elementor-location-header {
 
 .roof-type-layout {
   display: grid;
-  grid-template-columns: minmax(260px, 1.1fr) minmax(180px, 0.75fr);
+  grid-template-columns: minmax(min(100%, 300px), 1.1fr) minmax(min(100%, 200px), 0.75fr);
   align-items: center;
-  gap: 18px;
+  gap: 24px;
 }
 
 .stacked-options {
   display: grid;
-  gap: 12px;
+  gap: 16px;
 }
 
 .option-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 16px;
+}
+
+.color-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 20px;
 }
 
 .conditional-field {
-  margin-top: 14px;
+  margin-top: 20px;
 }
 
 .radio-card,
@@ -366,13 +429,25 @@ body.page-id-355 .elementor-location-header {
 .no-walls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  flex: 1 1 180px;
   width: auto;
-  min-height: 46px;
-  padding: 10px 12px;
+  min-height: 48px;
+  padding: 12px 14px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
+  cursor: pointer;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.radio-card:hover,
+.checkbox-card:hover,
+.no-walls:hover {
+  border-color: var(--accent);
+  box-shadow: 0 10px 22px rgba(30, 45, 36, 0.1);
 }
 
 .radio-card input,
@@ -380,6 +455,76 @@ body.page-id-355 .elementor-location-header {
 .no-walls input {
   width: 18px;
   min-height: 18px;
+}
+
+.image-radio-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: minmax(140px, 1fr) auto;
+  gap: 14px;
+  min-height: clamp(210px, 30vw, 250px);
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.image-radio-card:hover,
+.image-radio-card:has(input:checked) {
+  border-color: var(--accent);
+  box-shadow: 0 10px 22px rgba(30, 45, 36, 0.1);
+}
+
+.image-radio-card input {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 18px;
+  min-height: 18px;
+  z-index: 1;
+}
+
+.image-radio-card img {
+  display: block;
+  width: 100%;
+  height: clamp(150px, 24vw, 190px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  object-fit: contain;
+  background: #fff;
+}
+
+.straya-sheds-quote-form-embed input:not([type="radio"]):not([type="checkbox"]):not([type="file"]):not([type="hidden"]),
+.straya-sheds-quote-form-embed textarea,
+.straya-sheds-quote-form-embed input:not([type="radio"]):not([type="checkbox"]):not([type="file"]):not([type="hidden"]):focus,
+.straya-sheds-quote-form-embed input:not([type="radio"]):not([type="checkbox"]):not([type="file"]):not([type="hidden"]):focus-visible,
+.straya-sheds-quote-form-embed input:not([type="radio"]):not([type="checkbox"]):not([type="file"]):not([type="hidden"]):active,
+.straya-sheds-quote-form-embed input:not([type="radio"]):not([type="checkbox"]):not([type="file"]):not([type="hidden"]):valid,
+.straya-sheds-quote-form-embed input:not([type="radio"]):not([type="checkbox"]):not([type="file"]):not([type="hidden"]):invalid,
+.straya-sheds-quote-form-embed textarea:focus,
+.straya-sheds-quote-form-embed textarea:focus-visible,
+.straya-sheds-quote-form-embed textarea:active,
+.straya-sheds-quote-form-embed textarea:valid,
+.straya-sheds-quote-form-embed textarea:invalid {
+  border: 1px solid var(--line) !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  appearance: none;
+}
+
+.straya-sheds-quote-form-embed input:not([type="radio"]):not([type="checkbox"]):not([type="file"]):not([type="hidden"]):hover,
+.straya-sheds-quote-form-embed textarea:hover {
+  border: 1px solid var(--accent) !important;
+  outline: 0 !important;
+  box-shadow: 0 10px 22px rgba(30, 45, 36, 0.1) !important;
+}
+
+.image-radio-card span {
+  font-weight: 850;
 }
 
 .helper-text,
@@ -394,44 +539,65 @@ body.page-id-355 .elementor-location-header {
 
 .wall-section {
   display: grid;
-  gap: 14px;
+  gap: 22px;
 }
 
 .shed-diagram {
   display: grid;
-  grid-template-columns: minmax(68px, 0.34fr) minmax(260px, 1fr) minmax(68px, 0.34fr);
-  grid-template-rows: 58px minmax(170px, 0.72fr) 58px;
+  grid-template-columns: minmax(58px, 0.34fr) minmax(180px, 1fr) minmax(58px, 0.34fr);
+  grid-template-rows: minmax(52px, 0.22fr) minmax(150px, 1fr) minmax(52px, 0.22fr);
   gap: 8px;
   width: min(620px, 100%);
-  min-height: 310px;
+  min-height: clamp(260px, 52vw, 330px);
   margin: 0 auto;
 }
 
-.wall {
+.straya-sheds-quote-form-embed .wall {
   display: grid;
   place-items: center;
   min-width: 0;
   min-height: 0;
-  border: 2px solid var(--line);
+  border: 2px solid #f0445f !important;
   border-radius: 8px;
   color: var(--ink);
-  background: #fff;
+  background: #fff !important;
   cursor: pointer;
   font-weight: 900;
+  box-shadow: none !important;
   transition:
     background 140ms ease,
     border-color 140ms ease,
-    color 140ms ease;
+    color 140ms ease,
+    box-shadow 140ms ease;
 }
 
-.wall:hover {
-  border-color: var(--accent);
+.straya-sheds-quote-form-embed .wall:not(.is-selected):hover,
+.straya-sheds-quote-form-embed .wall[aria-pressed="false"]:hover {
+  border-color: var(--accent-strong) !important;
+  color: var(--accent-strong);
+  background: var(--accent-soft) !important;
+  box-shadow: 0 12px 26px rgba(30, 45, 36, 0.14) !important;
 }
 
-.wall.is-selected {
-  border-color: var(--accent-strong);
+.straya-sheds-quote-form-embed .wall:focus-visible {
+  outline: 3px solid rgba(47, 109, 77, 0.22);
+  outline-offset: 2px;
+}
+
+.straya-sheds-quote-form-embed .wall.is-selected,
+.straya-sheds-quote-form-embed .wall[aria-pressed="true"] {
+  border-color: var(--accent-strong) !important;
   color: #fff;
-  background: var(--accent);
+  background: var(--accent) !important;
+  box-shadow: none !important;
+}
+
+.straya-sheds-quote-form-embed .wall.is-selected:hover,
+.straya-sheds-quote-form-embed .wall[aria-pressed="true"]:hover {
+  border-color: var(--danger) !important;
+  color: var(--danger);
+  background: var(--danger-soft) !important;
+  box-shadow: 0 12px 26px rgba(180, 35, 24, 0.12) !important;
 }
 
 .wall-w1 {
@@ -477,7 +643,17 @@ body.page-id-355 .elementor-location-header {
 
 .submit-button {
   justify-self: start;
-  padding: 0 18px;
+  border-color: #88e788;
+  padding: 0 20px;
+  color: #102019;
+  background: #88e788;
+  box-shadow: 0 10px 22px rgba(30, 45, 36, 0.14);
+}
+
+.submit-button:hover {
+  border-color: #6ed96f;
+  background: #6ed96f;
+  box-shadow: 0 14px 28px rgba(30, 45, 36, 0.24);
 }
 
 .thank-you-panel {
@@ -499,7 +675,7 @@ body.page-id-355 .elementor-location-header {
 
 .admin-layout {
   display: grid;
-  grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
+  grid-template-columns: minmax(min(100%, 280px), 360px) minmax(0, 1fr);
   gap: 18px;
   margin-top: 18px;
 }
@@ -592,7 +768,7 @@ body.page-id-355 .elementor-location-header {
 
 .detail-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   gap: 12px;
 }
 
@@ -624,6 +800,7 @@ body.page-id-355 .elementor-location-header {
   .app-header,
   .admin-layout,
   .field-grid,
+  .color-options,
   .dimensions-layout,
   .roof-type-layout,
   .detail-grid {
@@ -632,6 +809,18 @@ body.page-id-355 .elementor-location-header {
 
   .app-header {
     display: grid;
+    position: relative;
+    gap: 14px;
+  }
+
+  nav {
+    justify-content: stretch;
+  }
+
+  .nav-button,
+  .secondary-button,
+  .submit-button {
+    flex: 1 1 160px;
   }
 
   .brand-logo-frame {
@@ -648,5 +837,66 @@ body.page-id-355 .elementor-location-header {
     grid-template-columns: 56px minmax(150px, 1fr) 56px;
     grid-template-rows: 56px minmax(150px, 0.7fr) 56px;
     min-height: 280px;
+  }
+}
+
+@media (max-width: 520px) {
+  .straya-sheds-quote-form-embed h1 {
+    font-size: 1.45rem;
+  }
+
+  .straya-sheds-quote-form-embed h2 {
+    font-size: 1.25rem;
+  }
+
+  .quote-form,
+  .quote-detail,
+  .quote-list-panel {
+    box-shadow: none;
+  }
+
+  .quote-form {
+    padding: 14px;
+  }
+
+  .straya-sheds-quote-form-embed fieldset {
+    padding: 20px;
+  }
+
+  .straya-sheds-quote-form-embed legend {
+    padding: 0 4px;
+  }
+
+  .required-tag,
+  .optional-tag {
+    display: table;
+    margin: 6px 0 0;
+  }
+
+  .option-row,
+  .panel-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .radio-card,
+  .checkbox-card,
+  .no-walls,
+  .submit-button,
+  .secondary-button,
+  .nav-button {
+    width: 100%;
+  }
+
+  .panel-header,
+  .quote-list-top {
+    display: grid;
+    align-items: start;
+  }
+
+  .shed-diagram {
+    grid-template-columns: 48px minmax(130px, 1fr) 48px;
+    grid-template-rows: 52px minmax(130px, 0.8fr) 52px;
+    min-height: 250px;
   }
 }
