@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shed Steel Quote Request</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="brand-lockup">
+        <div class="brand-logo-frame">
+          <img src="./assets/straya-sheds-logo.svg" alt="Straya Sheds" class="brand-logo" />
+        </div>
+        <div>
+          <p class="eyebrow">Local development</p>
+          <h1>Shed steel quote request</h1>
+        </div>
+      </div>
+      <nav aria-label="Primary">
+        <button class="nav-button is-active" data-view="form">Quote form</button>
+        <button class="nav-button" data-view="admin">Back end enquiries</button>
+      </nav>
+    </header>
+
+    <main>
+      <section id="form-view" class="view is-visible" aria-labelledby="form-title">
+        <form id="quote-form" class="quote-form">
+          <div class="section-heading">
+            <p class="eyebrow">Request details</p>
+            <h2 id="form-title">Customer and shed details</h2>
+          </div>
+
+          <fieldset>
+            <legend>Customer details <span class="required-tag">Required</span></legend>
+            <div class="field-grid">
+              <label>
+                Name
+                <input name="customerName" autocomplete="name" required />
+              </label>
+              <label>
+                Email
+                <input name="email" type="email" autocomplete="email" required />
+              </label>
+              <label>
+                Phone
+                <input name="phone" autocomplete="tel" required />
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Delivery address <span class="required-tag">Required</span></legend>
+            <div class="address-field">
+              <label for="delivery-address">Address</label>
+              <input
+                id="delivery-address"
+                name="deliveryAddress"
+                autocomplete="off"
+                aria-autocomplete="list"
+                aria-controls="address-suggestions"
+                aria-expanded="false"
+                placeholder="Start typing a street address"
+                required
+              />
+              <input id="delivery-address-data" name="deliveryAddressData" type="hidden" />
+              <div id="address-suggestions" class="address-suggestions" role="listbox" hidden></div>
+              <p id="address-selection-summary" class="helper-text">Choose a matching address, or keep typing a custom address.</p>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Shed dimensions <span class="required-tag">Required</span></legend>
+            <p class="helper-text">Enter all shed dimensions in metres.</p>
+            <div class="dimensions-layout">
+              <figure class="dimension-guide">
+                <img
+                  src="./assets/shed-dimensions-guide.png"
+                  alt="Shed dimension guide showing length, width, and height to eave"
+                />
+              </figure>
+              <div>
+                <div class="dimensions-grid">
+                  <label>
+                    Length (metres)
+                    <input name="length" inputmode="decimal" placeholder="e.g. 12" aria-describedby="dimensions-help" required />
+                  </label>
+                  <label>
+                    Width (metres)
+                    <input name="width" inputmode="decimal" placeholder="e.g. 7.5" aria-describedby="dimensions-help" required />
+                  </label>
+                  <label>
+                    Height (metres)
+                    <input name="height" inputmode="decimal" placeholder="e.g. 3.2" aria-describedby="dimensions-help" required />
+                  </label>
+                </div>
+                <p id="dimensions-help" class="helper-text">Use metre values only, for example 12, 7.5, and 3.2.</p>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Shed roof type <span class="required-tag">Required</span></legend>
+            <div class="roof-type-layout">
+              <figure class="roof-type-guide">
+                <img
+                  src="./assets/roof-types.png"
+                  alt="Comparison of gable roof and skillion roof shed types"
+                />
+              </figure>
+              <div class="stacked-options">
+                <label class="radio-card">
+                  <input type="radio" name="roofType" value="Gable" required />
+                  <span>Gable</span>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="roofType" value="Skillion" />
+                  <span>Skillion</span>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="roofType" value="Other or unsure" />
+                  <span>Other or unsure</span>
+                </label>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Roof pitch <span class="required-tag">Required</span></legend>
+            <div class="option-row">
+              <label class="radio-card">
+                <input type="radio" name="roofPitch" value="5 degrees" required />
+                <span>5 degrees</span>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="roofPitch" value="10 degrees" />
+                <span>10 degrees</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="wall-section">
+            <legend>Wall selection diagram <span class="required-tag">Required</span></legend>
+            <p class="helper-text">
+              Select which walls you want quoted, then choose the wall material. Roof sheets are always included.
+            </p>
+            <p class="naming-note">
+              L1 and L2 are the two long side walls. W1 and W2 are the two width/end walls.
+            </p>
+
+            <label class="no-walls">
+              <input id="no-walls" type="checkbox" checked />
+              <span>No walls required</span>
+            </label>
+
+            <div class="shed-diagram" aria-label="Top-down shed wall selector">
+              <button type="button" class="wall wall-w1" data-wall="W1" aria-pressed="false">
+                <span>W1</span>
+              </button>
+              <button type="button" class="wall wall-l1" data-wall="L1" aria-pressed="false">
+                <span>L1</span>
+              </button>
+              <div class="shed-center" aria-hidden="true">
+                <span>Roof included</span>
+              </div>
+              <button type="button" class="wall wall-l2" data-wall="L2" aria-pressed="false">
+                <span>L2</span>
+              </button>
+              <button type="button" class="wall wall-w2" data-wall="W2" aria-pressed="false">
+                <span>W2</span>
+              </button>
+            </div>
+
+            <p id="wall-summary" class="summary-line">Selected walls: None - roof only</p>
+            <div id="wall-material-field" class="conditional-field" hidden>
+              <p class="field-label">Wall material <span class="required-tag">Required when walls are selected</span></p>
+              <div class="option-row">
+                <label class="radio-card">
+                  <input type="radio" name="wallMaterial" value="Corrugated steel" />
+                  <span>Corrugated steel</span>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="wallMaterial" value="Concrete tilt panel" />
+                  <span>Concrete tilt panel</span>
+                </label>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Optional extras <span class="optional-tag">Optional</span></legend>
+            <div class="option-row">
+              <label class="checkbox-card">
+                <input name="purlins150c" type="checkbox" />
+                <span>150 C purlins</span>
+              </label>
+              <label class="checkbox-card">
+                <input name="insulationBlankets" type="checkbox" />
+                <span>Insulation blankets</span>
+              </label>
+              <label class="checkbox-card">
+                <input name="structuralSteel" type="checkbox" />
+                <span>Structural steel</span>
+              </label>
+            </div>
+            <div id="bay-width-field" class="conditional-field" hidden>
+              <label>
+                Bay width (metres) <span class="required-tag">Required when selected</span>
+                <input
+                  name="bayWidth"
+                  inputmode="decimal"
+                  placeholder="e.g. 6"
+                  aria-describedby="bay-width-help"
+                />
+              </label>
+              <p id="bay-width-help" class="helper-text">Enter the shared bay width in metres if 150 C purlins or structural steel are required.</p>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Shed drawing uploads <span class="optional-tag">Optional</span></legend>
+            <label>
+              Drawings or plans
+              <input name="drawings" type="file" multiple />
+            </label>
+            <p class="helper-text">For local development, uploaded file names are recorded only in your browser.</p>
+          </fieldset>
+
+          <fieldset>
+            <legend>Notes or extra details <span class="optional-tag">Optional</span></legend>
+            <label>
+              Notes or extra details
+              <textarea
+                name="notes"
+                rows="5"
+                maxlength="2000"
+                placeholder="Tell us anything else we should know - openings, roller doors, unusual measurements, access issues, delivery timing, or whether your measurements are approximate."
+              ></textarea>
+            </label>
+            <p id="notes-count" class="helper-text">0 / 2000 characters</p>
+          </fieldset>
+
+          <button class="submit-button" type="submit">Submit quote request</button>
+        </form>
+      </section>
+
+      <section id="thank-you-view" class="view" aria-labelledby="thank-you-title">
+        <div class="thank-you-panel">
+          <p class="eyebrow">Quote request received</p>
+          <h2 id="thank-you-title">Thanks. Your shed details have been received.</h2>
+          <p>
+            We'll review your dimensions, selected walls, drawings, and notes, then prepare your quote soon.
+          </p>
+          <button id="quote-another-shed" class="submit-button" type="button">Get a quote for another shed</button>
+        </div>
+      </section>
+
+      <section id="admin-view" class="view" aria-labelledby="admin-title">
+        <div class="section-heading">
+          <p class="eyebrow">Back end</p>
+          <h2 id="admin-title">Enquiries</h2>
+        </div>
+        <div class="admin-layout">
+          <aside class="quote-list-panel">
+            <div class="panel-header">
+              <h3>Enquiry list</h3>
+              <div class="panel-actions">
+                <button id="load-samples" class="secondary-button" type="button">Load samples</button>
+                <button id="clear-quotes" class="secondary-button" type="button">Clear local data</button>
+              </div>
+            </div>
+            <div id="quote-list" class="quote-list"></div>
+          </aside>
+          <article id="quote-detail" class="quote-detail">
+            <p class="empty-state">Submit a quote request to view the selected walls, notes, and email notification preview.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="./config.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
